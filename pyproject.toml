@@ -1,0 +1,7 @@
+[project]
+name = "letterboxd_clone_services"
+version = "0.1.0"
+# Não precisa de mais nada por agora
+
+[tool.setuptools]
+py-modules = []
