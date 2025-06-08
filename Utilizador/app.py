@@ -1,51 +1,50 @@
-# Utilizador/app.py
-
 import os
 from flask import Flask
-# Importa as instâncias partilhadas do ficheiro extensions
 from .extensions import db, migrate
-# Importa o blueprint das rotas
 from .routes import api_bp
 
 
 def create_app():
-    """Cria e configura uma instância da aplicação Flask."""
-    app = Flask(__name__, instance_relative_config=True)
+    """Cria e configura uma instância da aplicação Flask para o Serviço de Utilizador."""
 
-    # --- 1. Configuração ---
-    # Carrega a configuração a partir de um ficheiro (opcional, mas boa prática)
-    # app.config.from_object('config.Config')
+    app = Flask(__name__)
 
-    # Ou configura diretamente como você estava a fazer:
-    basedir = os.path.abspath(os.path.dirname(__file__))
-    db_path = os.path.join(app.instance_path, 'database.db')
+    # --- 1. Definir os Caminhos de Forma Explícita e Segura ---
+    # `__file__` refere-se a este ficheiro (app.py)
+    # `os.path.dirname` dá-nos a pasta que o contém (`Utilizador`)
+    service_root_path = os.path.abspath(os.path.dirname(__file__))
+
+    # Construímos o caminho para a pasta de instância DENTRO da pasta do serviço
+    instance_path = os.path.join(service_root_path, 'instance')
+
+    # --- 2. Garantir que a Pasta de Instância Existe ---
+    # Este é o passo crucial. Criamos o diretório ANTES de o usarmos.
+    try:
+        os.makedirs(instance_path, exist_ok=True)
+        print(f"Pasta de instância garantida em: {instance_path}")  # Mensagem de debug
+    except OSError as e:
+        print(f"Erro ao criar a pasta de instância: {e}")
+
+    # --- 3. Configurar a Aplicação ---
+    db_path = os.path.join(instance_path, 'database.db')
+
     app.config.from_mapping(
         SECRET_KEY='minha-chave-secreta-de-desenvolvimento',
         SQLALCHEMY_DATABASE_URI=f'sqlite:///{db_path}',
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
     )
 
-    # Garante que a pasta 'instance' existe
-    try:
-        os.makedirs(app.instance_path)
-    except OSError:
-        pass
-
-    # --- 2. Inicialização das Extensões ---
+    # --- 4. Inicializar as Extensões com a App ---
     db.init_app(app)
     migrate.init_app(app, db)
 
-    # --- 3. Registo do Blueprint ---
+    # --- 5. Registar o Blueprint ---
     app.register_blueprint(api_bp)
 
-    # --- 4. Comandos CLI e Contexto da Aplicação ---
+    # --- 6. Criar as Tabelas da Base de Dados ---
     with app.app_context():
-        # db.create_all() é útil para criar a BD rapidamente na primeira vez.
-        # Para alterações futuras, use o flask db migrate e flask db upgrade.
+        # Agora, quando esta linha for executada, a pasta de destino já existe.
         db.create_all()
+        print(f"Tabelas da base de dados criadas/verificadas para: {db_path}")  # Mensagem de debug
 
     return app
-
-if __name__ == '__main__':
-    app = create_app()
-    app.run(port=5001, debug=True)
