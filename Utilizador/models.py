@@ -1,7 +1,12 @@
-from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import generate_password_hash, check_password_hash
+# Utilizador/models.py
 
-db = SQLAlchemy()
+from flask import current_app
+from itsdangerous import URLSafeTimedSerializer as Serializer
+from werkzeug.security import generate_password_hash, check_password_hash
+# Importa a instância 'db' do ficheiro central de extensões
+from .extensions import db
+
+# A linha "db = SQLAlchemy()" FOI REMOVIDA DAQUI.
 
 class User(db.Model):
     """MODELO: Representa a tabela de utilizadores."""
@@ -20,7 +25,6 @@ class User(db.Model):
         """Converte o objeto para um dicionário para ser serializado em JSON."""
         return {'id': self.id, 'username': self.username, 'email': self.email}
 
-    # --- INÍCIO DA IMPLEMENTAÇÃO DO PADRÃO DAO ---
     @classmethod
     def find_by_username(cls, username):
         """Método DAO: Encontra um utilizador pelo seu username."""
@@ -35,4 +39,18 @@ class User(db.Model):
         """Método DAO: Guarda a instância atual (novo ou alterado) na base de dados."""
         db.session.add(self)
         db.session.commit()
-    # --- FIM DA IMPLEMENTAÇÃO DO PADRÃO DAO ---
+
+    def get_reset_token(self, expires_sec=1800):
+        """Gera um token de reset de password com tempo de expiração (default: 30 minutos)."""
+        s = Serializer(current_app.config['SECRET_KEY'])
+        return s.dumps({'user_id': self.id})
+
+    @staticmethod
+    def verify_reset_token(token, expires_sec=1800):
+        """Verifica o token de reset e devolve o ID do utilizador se for válido."""
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            user_id = s.loads(token, max_age=expires_sec)['user_id']
+        except:
+            return None
+        return User.query.get(user_id)

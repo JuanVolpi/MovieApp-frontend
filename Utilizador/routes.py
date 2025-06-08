@@ -1,19 +1,15 @@
-# ServicoUtilizador/routes.py
+# Utilizador/routes.py
+
 from flask import request, jsonify, Blueprint
+# O único import necessário do nosso código é o modelo User
 from .models import User
 
-# 1. Cria o objeto Blueprint.
-# 'api' é o nome do blueprint.
-# __name__ ajuda o Flask a localizar recursos como templates.
-# url_prefix adiciona '/api' antes de todas as rotas deste blueprint.
 api_bp = Blueprint('api', __name__, url_prefix='/api')
 
-
-# 2. Associa as rotas ao Blueprint usando @api_bp.route()
 @api_bp.route('/users/register', methods=['POST'])
 def register_user():
     data = request.get_json()
-    if not data or not 'username' in data or not 'password' in data:
+    if not data or 'username' not in data or 'password' not in data:
         return jsonify({'error': 'Faltam os campos username e password'}), 400
 
     if User.find_by_username(data['username']):
@@ -25,11 +21,61 @@ def register_user():
 
     return jsonify({'message': 'Utilizador criado com sucesso!', 'user': new_user.to_dict()}), 201
 
+@api_bp.route('/users/login', methods=['POST'])
+def login_user():
+    data = request.get_json()
+    if not data or 'username' not in data or 'password' not in data:
+        return jsonify({'error': 'Faltam os campos username e password'}), 400
+
+    user = User.find_by_username(data['username'])
+    if not user or not user.check_password(data['password']):
+        return jsonify({'error': 'Credenciais inválidas'}), 401
+
+    return jsonify({
+        'message': 'Login bem-sucedido!',
+        'user': user.to_dict()
+    })
 
 @api_bp.route('/users/<int:user_id>', methods=['GET'])
 def get_user(user_id):
     user = User.find_by_id(user_id)
     if not user:
         return jsonify({'error': 'Utilizador não encontrado'}), 404
-
     return jsonify(user.to_dict())
+
+@api_bp.route('/users/username/<string:username>', methods=['GET'])
+def get_user_by_username(username):
+    user = User.find_by_username(username)
+    if not user:
+        return jsonify({'error': 'Utilizador não encontrado'}), 404
+    return jsonify(user.to_dict())
+
+@api_bp.route('/users/reset_password_request', methods=['POST'])
+def reset_request():
+    data = request.get_json()
+    if 'email' not in data:
+        return jsonify({'error': 'Email em falta'}), 400
+
+    user = User.query.filter_by(email=data['email']).first()
+    if user:
+        token = user.get_reset_token()
+        print(f"--- SIMULADOR DE EMAIL PARA {user.email} ---")
+        print(f"Token de reset: {token}")
+        print("--- FIM DO SIMULADOR ---")
+        return jsonify({'message': 'Se o email existir, um link de reset foi enviado.', 'test_token': token})
+
+    return jsonify({'message': 'Se o email existir, um link de reset foi enviado.'})
+
+@api_bp.route('/users/reset_password/<token>', methods=['POST'])
+def reset_token(token):
+    user = User.verify_reset_token(token)
+    if not user:
+        return jsonify({'error': 'Token inválido ou expirado'}), 401
+
+    data = request.get_json()
+    if 'password' not in data:
+        return jsonify({'error': 'Password em falta'}), 400
+
+    user.set_password(data['password'])
+    user.save_to_db()
+    return jsonify({'message': 'A sua password foi alterada com sucesso!'})

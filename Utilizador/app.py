@@ -1,48 +1,51 @@
+# Utilizador/app.py
+
 import os
 from flask import Flask
-from flask_migrate import Migrate, upgrade
-from .models import db, User
+# Importa as instâncias partilhadas do ficheiro extensions
+from .extensions import db, migrate
+# Importa o blueprint das rotas
 from .routes import api_bp
 
 
-# Esta função irá criar a aplicação e a base de dados
 def create_app():
-    app = Flask(__name__)
+    """Cria e configura uma instância da aplicação Flask."""
+    app = Flask(__name__, instance_relative_config=True)
 
-    # --- 1. Configuração Explícita ---
+    # --- 1. Configuração ---
+    # Carrega a configuração a partir de um ficheiro (opcional, mas boa prática)
+    # app.config.from_object('config.Config')
+
+    # Ou configura diretamente como você estava a fazer:
     basedir = os.path.abspath(os.path.dirname(__file__))
-    instance_path = os.path.join(basedir, 'instance')
-    os.makedirs(instance_path, exist_ok=True)
-    db_path = os.path.join(instance_path, 'database.db')
+    db_path = os.path.join(app.instance_path, 'database.db')
+    app.config.from_mapping(
+        SECRET_KEY='minha-chave-secreta-de-desenvolvimento',
+        SQLALCHEMY_DATABASE_URI=f'sqlite:///{db_path}',
+        SQLALCHEMY_TRACK_MODIFICATIONS=False,
+    )
 
-    app.config['SECRET_KEY'] = 'minha-chave-secreta-de-desenvolvimento'
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    # Garante que a pasta 'instance' existe
+    try:
+        os.makedirs(app.instance_path)
+    except OSError:
+        pass
 
     # --- 2. Inicialização das Extensões ---
     db.init_app(app)
-    migrate = Migrate(app, db)
+    migrate.init_app(app, db)
 
-    # --- 3. Criação da Base de Dados e Tabelas (A PARTE NOVA) ---
-    with app.app_context():
-        # A primeira vez que corre, isto cria o ficheiro database.db
-        # e todas as tabelas definidas em models.py
-        db.create_all()
-
-        # Opcional: Para aplicar migrações automaticamente
-        # Isto é mais avançado e pode ser arriscado se não for bem gerido.
-        # Por agora, db.create_all() é mais seguro e simples.
-        # Se a pasta 'migrations' existir, aplica as migrações.
-        # if os.path.exists(os.path.join(basedir, 'migrations')):
-        #     upgrade()
-
-    # --- 4. Registo do Blueprint ---
+    # --- 3. Registo do Blueprint ---
     app.register_blueprint(api_bp)
+
+    # --- 4. Comandos CLI e Contexto da Aplicação ---
+    with app.app_context():
+        # db.create_all() é útil para criar a BD rapidamente na primeira vez.
+        # Para alterações futuras, use o flask db migrate e flask db upgrade.
+        db.create_all()
 
     return app
 
-
-# Bloco para correr diretamente com "python app.py"
 if __name__ == '__main__':
     app = create_app()
     app.run(port=5001, debug=True)

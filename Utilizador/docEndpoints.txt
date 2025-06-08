@@ -1,0 +1,102 @@
+API de Utilizadores - Documentação dos Endpoints
+================================================
+
+URL base: /api
+
+------------------------------------------------
+1. REGISTO DE UTILIZADOR
+------------------------------------------------
+POST /api/users/register
+
+Descrição:
+Cria um novo utilizador com username, password e opcionalmente email.
+
+Parâmetros (JSON):
+{
+    "username": "nome_utilizador",
+    "password": "senha_segura",
+    "email": "exemplo@email.com" (opcional)
+}
+
+Respostas:
+- 201: Utilizador criado com sucesso
+- 400: Faltam os campos obrigatórios
+- 409: Username já existente
+
+------------------------------------------------
+2. LOGIN DE UTILIZADOR
+------------------------------------------------
+POST /api/users/login
+
+Descrição:
+Autentica o utilizador com username e password.
+
+Parâmetros (JSON):
+{
+    "username": "nome_utilizador",
+    "password": "senha"
+}
+
+Respostas:
+- 200: Login bem-sucedido
+- 400: Campos em falta
+- 401: Credenciais inválidas
+
+------------------------------------------------
+3. OBTER UTILIZADOR POR ID
+------------------------------------------------
+GET /api/users/<user_id>
+
+Descrição:
+Devolve os dados de um utilizador a partir do seu ID.
+
+Respostas:
+- 200: Dados do utilizador
+- 404: Utilizador não encontrado
+
+------------------------------------------------
+4. OBTER UTILIZADOR POR USERNAME
+------------------------------------------------
+GET /api/users/username/<username>
+
+Descrição:
+Devolve os dados de um utilizador a partir do seu username.
+
+Respostas:
+- 200: Dados do utilizador
+- 404: Utilizador não encontrado
+
+------------------------------------------------
+5. PEDIDO DE RESET DE PASSWORD
+------------------------------------------------
+POST /api/users/reset_password_request
+
+Descrição:
+Gera um token de reset de password e simula envio por email (apenas imprime no terminal).
+
+Parâmetros (JSON):
+{
+    "email": "utilizador@email.com"
+}
+
+Respostas:
+- 200: Mensagem genérica sobre envio de email
+- 400: Email em falta
+
+------------------------------------------------
+6. DEFINIR NOVA PASSWORD ATRAVÉS DO TOKEN
+------------------------------------------------
+POST /api/users/reset_password/<token>
+
+Descrição:
+Define nova password com base num token de reset.
+
+Parâmetros (JSON):
+{
+    "password": "nova_senha"
+}
+
+Respostas:
+- 200: Password alterada com sucesso
+- 400: Password em falta
+- 401: Token inválido ou expirado
