@@ -26,7 +26,7 @@ def create_app():
         print(f"Erro ao criar a pasta de instância: {e}")
 
     # --- 3. Configurar a Aplicação ---
-    db_path = os.path.join(instance_path, 'database.db')
+    db_path = os.path.join(instance_path, 'utilizador.db')
 
     app.config.from_mapping(
         SECRET_KEY='minha-chave-secreta-de-desenvolvimento',
