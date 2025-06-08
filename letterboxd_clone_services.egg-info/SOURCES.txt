@@ -1,5 +1,0 @@
-pyproject.toml
-letterboxd_clone_services.egg-info/PKG-INFO
-letterboxd_clone_services.egg-info/SOURCES.txt
-letterboxd_clone_services.egg-info/dependency_links.txt
-letterboxd_clone_services.egg-info/top_level.txt
