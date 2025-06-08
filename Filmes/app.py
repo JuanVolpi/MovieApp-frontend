@@ -1,7 +1,7 @@
 import os
 from flask import Flask
 from dotenv import load_dotenv
-
+load_dotenv()
 # Importa as instâncias partilhadas do ficheiro extensions deste serviço
 from .extensions import db, migrate
 # Importa o blueprint das rotas deste serviço
@@ -9,7 +9,7 @@ from .routes import api_bp_filmes
 
 # Carrega as variáveis de ambiente do ficheiro .env na raiz do projeto
 # Isto é crucial para que o os.environ.get('TMDB_API_KEY') funcione.
-load_dotenv()
+
 
 def create_app():
     """Cria e configura uma instância da aplicação Flask para o Serviço de Filmes."""
