@@ -1,3 +1,4 @@
+#Filmes/routes.py
 from flask import request, jsonify, Blueprint
 from .models import db, Movie # Import db para as migrações
 from .tmdb_client import tmdb_client

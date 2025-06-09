@@ -1,0 +1,85 @@
+API de Filmes - Documentação dos Endpoints
+==========================================
+
+URL base: /api
+
+------------------------------------------------
+1. PESQUISAR FILMES
+------------------------------------------------
+GET /api/movies/search
+
+Descrição:
+Procura filmes por um termo (título) e devolve uma lista de resultados.
+Esta rota atua como um proxy para a API do TMDB e não utiliza a cache local.
+
+Parâmetros de Query (URL):
+?query=<termo_de_pesquisa>
+
+Exemplo de URL: /api/movies/search?query=Matrix
+
+Resposta de Sucesso (200 OK):
+- Corpo: Uma lista de objetos JSON, onde cada objeto contém informações
+  básicas do filme (id, title, release_date, poster_path, etc.).
+
+Exemplo de Resposta:
+[
+    {
+        "id": 603,
+        "title": "The Matrix",
+        "release_date": "1999-03-30",
+        ...
+    },
+    {
+        "id": 604,
+        "title": "The Matrix Reloaded",
+        "release_date": "2003-05-15",
+        ...
+    }
+]
+
+Respostas de Erro:
+- 400: O parâmetro "query" não foi fornecido na URL.
+
+------------------------------------------------
+2. OBTER DETALHES COMPLETOS DE UM FILME
+------------------------------------------------
+GET /api/movies/<tmdb_id>
+
+Descrição:
+Devolve os detalhes completos de um filme específico, identificado pelo seu ID
+do TMDB. Este endpoint implementa uma lógica de cache:
+1. Procura o filme na base de dados local. Se encontrar, devolve-o imediatamente.
+2. Se não encontrar, vai buscar os dados completos (incluindo realizador,
+   estúdios, etc.) à API do TMDB, guarda-os na base de dados local para
+   futuros pedidos, e depois devolve os dados.
+
+Parâmetros de URL:
+<tmdb_id> (integer): O ID único do filme no The Movie Database.
+
+Exemplo de URL: /api/movies/27205
+
+Resposta de Sucesso (200 OK):
+- Corpo: Um único objeto JSON com os detalhes completos do filme.
+
+Exemplo de Resposta:
+{
+    "tmdb_id": 27205,
+    "title": "A Origem",
+    "year": "2010",
+    "director": "Christopher Nolan",
+    "studios": [
+        "Legendary Pictures",
+        "Syncopy",
+        "Warner Bros. Pictures"
+    ],
+    "countries": [
+        "Reino Unido",
+        "Estados Unidos da América"
+    ],
+    "overview": "Dom Cobb é um ladrão talentoso...",
+    "poster_url": "https://image.tmdb.org/t/p/w500/....jpg"
+}
+
+Respostas de Erro:
+- 404: O filme com o ID fornecido não foi encontrado nem na cache local
+       nem na API do TMDB.
