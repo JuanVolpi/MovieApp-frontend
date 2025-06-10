@@ -1,3 +1,4 @@
+#Filmes/models.py
 from .extensions import db  # Importa a instância partilhada
 import json  # Usaremos json para guardar listas (estúdios, países)
 
