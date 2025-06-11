@@ -19,9 +19,9 @@ Parâmetros (JSON):
 }
 
 Respostas:
-- 201: Utilizador criado com sucesso
-- 400: Faltam os campos obrigatórios
-- 409: Username já existente
+- 201 Created: Utilizador criado com sucesso. Devolve os dados do novo utilizador.
+- 400 Bad Request: Faltam os campos obrigatórios.
+- 409 Conflict: Username já existente.
 
 ------------------------------------------------
 2. LOGIN DE UTILIZADOR
@@ -38,9 +38,9 @@ Parâmetros (JSON):
 }
 
 Respostas:
-- 200: Login bem-sucedido
-- 400: Campos em falta
-- 401: Credenciais inválidas
+- 200 OK: Login bem-sucedido. Devolve os dados do utilizador.
+- 400 Bad Request: Campos em falta.
+- 401 Unauthorized: Credenciais inválidas.
 
 ------------------------------------------------
 3. OBTER UTILIZADOR POR ID
@@ -48,11 +48,21 @@ Respostas:
 GET /api/users/<user_id>
 
 Descrição:
-Devolve os dados de um utilizador a partir do seu ID.
+Devolve os dados de um utilizador, incluindo as contagens de seguidores e
+de quem segue, a partir do seu ID numérico.
+
+Exemplo de Resposta (200 OK):
+{
+    "id": 1,
+    "username": "nome_utilizador",
+    "email": "exemplo@email.com",
+    "following_count": 5,
+    "followers_count": 10
+}
 
 Respostas:
-- 200: Dados do utilizador
-- 404: Utilizador não encontrado
+- 200 OK: Dados do utilizador.
+- 404 Not Found: Utilizador não encontrado.
 
 ------------------------------------------------
 4. OBTER UTILIZADOR POR USERNAME
@@ -63,16 +73,86 @@ Descrição:
 Devolve os dados de um utilizador a partir do seu username.
 
 Respostas:
-- 200: Dados do utilizador
-- 404: Utilizador não encontrado
+- 200 OK: Dados do utilizador (mesmo formato que obter por ID).
+- 404 Not Found: Utilizador não encontrado.
 
 ------------------------------------------------
-5. PEDIDO DE RESET DE PASSWORD
+5. SEGUIR UM UTILIZADOR
+------------------------------------------------
+POST /api/users/<user_id>/follow
+
+Descrição:
+Faz com que o utilizador identificado por <user_id> passe a seguir outro
+utilizador, especificado no corpo do pedido.
+
+Parâmetros de URL:
+<user_id> (integer): O ID do utilizador que vai executar a ação de seguir.
+
+Parâmetros (JSON):
+{
+    "user_to_follow_id": 2  // ID do utilizador a ser seguido
+}
+
+Respostas:
+- 200 OK: Ação executada com sucesso (seja por já seguir ou por ter começado a seguir agora).
+- 400 Bad Request: "user_to_follow_id" em falta ou tentativa de seguir a si mesmo.
+- 404 Not Found: Um dos utilizadores (ou ambos) não foi encontrado.
+
+------------------------------------------------
+6. DEIXAR DE SEGUIR UM UTILIZADOR
+------------------------------------------------
+POST /api/users/<user_id>/unfollow
+
+Descrição:
+Faz com que o utilizador identificado por <user_id> deixe de seguir outro
+utilizador, especificado no corpo do pedido.
+
+Parâmetros de URL:
+<user_id> (integer): O ID do utilizador que vai executar a ação.
+
+Parâmetros (JSON):
+{
+    "user_to_unfollow_id": 2  // ID do utilizador a deixar de seguir
+}
+
+Respostas:
+- 200 OK: Ação executada com sucesso.
+- 400 Bad Request: "user_to_unfollow_id" em falta.
+- 404 Not Found: Um dos utilizadores (ou ambos) não foi encontrado.
+
+------------------------------------------------
+7. OBTER LISTA DE "FOLLOWING" (QUEM O UTILIZADOR SEGUE)
+------------------------------------------------
+GET /api/users/<user_id>/following
+
+Descrição:
+Devolve uma lista com os perfis completos dos utilizadores que o utilizador
+com o <user_id> segue.
+
+Respostas:
+- 200 OK: Uma lista de objetos de utilizador.
+- 404 Not Found: Utilizador não encontrado.
+
+------------------------------------------------
+8. OBTER LISTA DE "FOLLOWERS" (QUEM SEGUE O UTILIZADOR)
+------------------------------------------------
+GET /api/users/<user_id>/followers
+
+Descrição:
+Devolve uma lista com os perfis completos dos utilizadores que seguem o
+utilizador com o <user_id>.
+
+Respostas:
+- 200 OK: Uma lista de objetos de utilizador.
+- 404 Not Found: Utilizador não encontrado.
+
+------------------------------------------------
+9. PEDIDO DE RESET DE PASSWORD
 ------------------------------------------------
 POST /api/users/reset_password_request
 
 Descrição:
-Gera um token de reset de password e simula envio por email (apenas imprime no terminal).
+Gera um token de reset de password e simula envio por email (imprime no terminal).
 
 Parâmetros (JSON):
 {
@@ -80,16 +160,16 @@ Parâmetros (JSON):
 }
 
 Respostas:
-- 200: Mensagem genérica sobre envio de email
-- 400: Email em falta
+- 200 OK: Mensagem genérica sobre envio de email.
+- 400 Bad Request: Email em falta.
 
 ------------------------------------------------
-6. DEFINIR NOVA PASSWORD ATRAVÉS DO TOKEN
+10. DEFINIR NOVA PASSWORD ATRAVÉS DO TOKEN
 ------------------------------------------------
 POST /api/users/reset_password/<token>
 
 Descrição:
-Define nova password com base num token de reset.
+Define nova password com base num token de reset válido.
 
 Parâmetros (JSON):
 {
@@ -97,6 +177,6 @@ Parâmetros (JSON):
 }
 
 Respostas:
-- 200: Password alterada com sucesso
-- 400: Password em falta
-- 401: Token inválido ou expirado
+- 200 OK: Password alterada com sucesso.
+- 400 Bad Request: Password em falta.
+- 401 Unauthorized: Token inválido ou expirado.
