@@ -1,5 +1,6 @@
 import os
 from flask import Flask
+from flask_cors import CORS
 from dotenv import load_dotenv
 load_dotenv()
 # Importa as instâncias partilhadas do ficheiro extensions deste serviço
@@ -15,6 +16,8 @@ def create_app():
     """Cria e configura uma instância da aplicação Flask para o Serviço de Filmes."""
 
     app = Flask(__name__)
+
+    CORS(app)
 
     # --- 1. Definir os Caminhos de Forma Explícita e Segura ---
     # `__file__` refere-se a este ficheiro (Filmes/app.py)
