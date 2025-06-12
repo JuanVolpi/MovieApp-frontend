@@ -1,6 +1,7 @@
 #Utilizador/app.py
 import os
 from flask import Flask
+from flask_cors import CORS
 from .extensions import db, migrate
 from .routes import api_bp
 
@@ -9,6 +10,8 @@ def create_app():
     """Cria e configura uma instância da aplicação Flask para o Serviço de Utilizador."""
 
     app = Flask(__name__)
+
+    CORS(app)
 
     # --- 1. Definir os Caminhos de Forma Explícita e Segura ---
     # `__file__` refere-se a este ficheiro (app.py)
