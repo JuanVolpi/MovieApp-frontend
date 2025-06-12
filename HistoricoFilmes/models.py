@@ -16,7 +16,7 @@ class UserMovieEntry(db.Model):
     state = db.Column(db.String(20), nullable=False, default='WATCHLIST')  # 'WATCHLIST' ou 'WATCHED'
 
     # Campos que só são preenchidos quando state='WATCHED'
-    rating = db.Column(db.Float, nullable=True)
+    rating = db.Column(db.Integer, nullable=True)  # 0 -5 estrelas
     review_text = db.Column(db.Text, nullable=True)
     watch_date = db.Column(db.Date, nullable=True)
 
