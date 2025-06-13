@@ -4,7 +4,6 @@ import threading
 
 
 class TMDBClient:
-    # ... (o __new__ e o _lock permanecem iguais) ...
     _instance = None
     _lock = threading.Lock()
 
@@ -37,6 +36,40 @@ class TMDBClient:
         params = {'query': query}
         data = self._make_request("search/movie", params=params)
         return data['results'] if data and 'results' in data else []
+
+    def get_popular_movies(self, limit=10):
+        """
+        Obtém os filmes mais populares da atualidade.
+
+        Args:
+            limit (int): Número máximo de filmes a devolver (padrão: 10)
+
+        Returns:
+            list: Lista dos filmes mais populares com informações básicas
+        """
+        data = self._make_request("movie/popular")
+        if not data or 'results' not in data:
+            return []
+
+        # Limita o número de resultados e formata a resposta
+        popular_movies = data['results'][:limit]
+
+        # Formatar os dados para ter consistência com o resto da API
+        formatted_movies = []
+        for movie in popular_movies:
+            formatted_movie = {
+                'tmdb_id': movie.get('id'),
+                'title': movie.get('title'),
+                'year': movie.get('release_date', '----').split('-')[0] if movie.get('release_date') else "N/A",
+                'overview': movie.get('overview'),
+                'poster_path': movie.get('poster_path'),
+                'popularity': movie.get('popularity'),
+                'vote_average': movie.get('vote_average'),
+                'vote_count': movie.get('vote_count')
+            }
+            formatted_movies.append(formatted_movie)
+
+        return formatted_movies
 
     def get_full_movie_details(self, tmdb_id):
         """

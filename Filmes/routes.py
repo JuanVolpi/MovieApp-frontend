@@ -15,6 +15,18 @@ def search_movies():
     # A pesquisa devolve uma lista simplificada, o que é bom para a página de resultados.
     return jsonify(results)
 
+@api_bp_filmes.route('/movies/popular', methods=['GET'])
+def get_popular_movies():
+    """
+    Obtém os 10 filmes mais populares da atualidade do TMDB
+    """
+    try:
+        popular_movies = tmdb_client.get_popular_movies(limit=10)
+        return jsonify(popular_movies)
+    except Exception as e:
+        print(f"Erro ao obter filmes populares: {str(e)}")
+        return jsonify({'error': 'Erro ao obter filmes populares'}), 500
+
 @api_bp_filmes.route('/movies/<int:tmdb_id>', methods=['GET'])
 def get_movie_details(tmdb_id):
     # 1. Tenta encontrar o filme na nossa base de dados local

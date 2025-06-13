@@ -38,10 +38,31 @@ Exemplo de Resposta:
 ]
 
 Respostas de Erro:
-- 400: O parâmetro "query" não foi fornecido na URL.
+- 400 Bad Request: O parâmetro "query" não foi fornecido na URL.
 
 ------------------------------------------------
-2. OBTER DETALHES COMPLETOS DE UM FILME
+2. OBTER FILMES MAIS POPULARES
+------------------------------------------------
+GET /api/movies/popular
+
+Descrição:
+Devolve uma lista dos filmes mais populares lançados nos últimos 6 meses,
+ordenados por popularidade. Os dados vêm diretamente do TMDB.
+
+Parâmetros de Query (URL):
+?limit=<numero> (opcional): Número de filmes a devolver. O valor padrão é 10.
+
+Exemplo de URL: /api/movies/popular?limit=5
+
+Resposta de Sucesso (200 OK):
+- Corpo: Uma lista de objetos JSON, com o mesmo formato da resposta da
+  pesquisa, contendo os filmes mais populares.
+
+Respostas de Erro:
+- 500 Internal Server Error: Se ocorrer um erro ao comunicar com a API do TMDB.
+
+------------------------------------------------
+3. OBTER DETALHES COMPLETOS DE UM FILME
 ------------------------------------------------
 GET /api/movies/<tmdb_id>
 
@@ -81,5 +102,5 @@ Exemplo de Resposta:
 }
 
 Respostas de Erro:
-- 404: O filme com o ID fornecido não foi encontrado nem na cache local
+- 404 Not Found: O filme com o ID fornecido não foi encontrado nem na cache local
        nem na API do TMDB.

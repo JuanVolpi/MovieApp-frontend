@@ -1,2 +1,22 @@
-/_Testing/
-/Filmes/.env
+# Ficheiros de ambiente virtual
+venv/
+.venv/
+
+# Ficheiros de cache do Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Ficheiros de configuração de IDEs
+.idea/
+.vscode/
+
+# Ficheiros de base de dados SQLite
+*/instance/
+
+# Ficheiros de ambiente (IGNORAR EM TODAS AS PASTAS)
+.env
+.flaskenv
+
+# Ficheiros de teste (O seu já tem _Testing/, o que é bom)
+_Testing/

@@ -1,0 +1,51 @@
+version: '3.8'
+
+# A secção `services` define os nossos containers (microserviços)
+services:
+  # --- Serviço de Utilizador ---
+  servico-utilizador:
+    # Nome do container na rede Docker
+    container_name: servico-utilizador
+    # Diz ao Docker Compose para construir a imagem a partir da pasta ./Utilizador
+    build: ./Utilizador
+    # Mapeia a porta 5001 do container para a porta 5001 da sua máquina
+    ports:
+      - "5001:5001"
+    # Monta um volume para que a base de dados seja persistida no seu disco
+    volumes:
+      - ./Utilizador/instance:/app/instance
+    # Liga este serviço à nossa rede privada
+    networks:
+      - app-network
+
+  # --- Serviço de Filmes ---
+  servico-filmes:
+    container_name: servico-filmes
+    build: ./Filmes
+    ports:
+      - "5002:5002"
+    volumes:
+      - ./Filmes/instance:/app/instance
+    # O .env na raiz do projeto é lido pelo Docker Compose e as suas variáveis
+    # são passadas para o ambiente deste container.
+    env_file:
+      - .env
+    networks:
+      - app-network
+
+  # --- Serviço de Histórico ---
+  servico-historico:
+    container_name: servico-historico
+    build: ./HistoricoFilmes
+    ports:
+      - "5003:5003"
+    volumes:
+      - ./HistoricoFilmes/instance:/app/instance
+    networks:
+      - app-network
+
+# A secção `networks` define a rede privada onde os nossos serviços podem comunicar
+networks:
+  app-network:
+    # `bridge` é o tipo de rede padrão e mais comum
+    driver: bridge
