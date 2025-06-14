@@ -7,7 +7,6 @@ interface MovieGridProps {
 }
 
 export default function MovieGrid({ filmes, onFilmeClick }: MovieGridProps) {
-  console.log(filmes)
   if (!filmes || filmes.length === 0) {
     return (
       <div className="text-center py-8">Nenhum filme encontrado.</div>
