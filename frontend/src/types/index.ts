@@ -20,3 +20,10 @@ export interface Filme {
   original_language: string;
   video: boolean;
 }
+
+export interface User {
+  id: number
+  username: string
+  email:string
+  avatar:string
+}
