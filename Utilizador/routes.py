@@ -76,7 +76,8 @@ def login_user():
     # Criação do token JWT com o payload corrigido
     token_payload = {
         'sub': str(user.id),
-        'username': user.username,  # <-- A CORREÇÃO ESTÁ AQUI
+        'username': user.username, 
+        'email': user.email,
         'iat': datetime.now(timezone.utc),
         'exp': datetime.now(timezone.utc) + timedelta(hours=24)
     }
