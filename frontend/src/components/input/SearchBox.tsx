@@ -5,16 +5,17 @@ interface Props {
   value: string;
   onChange: (value: string) => void;
   onClear?: () => void;
+  placeholder?: string;
 }
 
-export default function SearchBox({ value, onChange, onClear }: Props) {
+export default function SearchBox({ value, onChange, onClear, placeholder }: Props) {
   return (
     <Input
       isClearable
       value={value}
       onValueChange={onChange}
       onClear={onClear}
-      placeholder="Search for movies..."
+      placeholder={placeholder}
       radius="lg"
       classNames={{
         label: "text-black/50 dark:text-white/90",
