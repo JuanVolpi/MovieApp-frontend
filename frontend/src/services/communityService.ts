@@ -1,20 +1,59 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:5001";
+const BASE_URL = import.meta.env.VITE_UTILIZADOR_API_BASE_URL;
 
+// Buscar utilizador por username
 export async function getUserByUsername(username: string) {
-  const response = await axios.get(`${BASE_URL}/users/username/${username}`);
-  return response.data; // espera-se: { id, username, ... }
+  const response = await axios.get(`${BASE_URL}username/${username}`);
+  return response.data;
 }
 
-export async function followUser(myId: number, userToFollowId: number) {
-  return axios.post(`${BASE_URL}/users/${myId}/follow`, {
-    user_to_follow_id: userToFollowId,
+// Buscar utilizador por username pesquisa parcial
+export async function getUsersByPartialUsername(username: string) {
+  const response = await axios.get(`${BASE_URL}search`, {
+    params: { query: username }
   });
+  return response.data;
 }
 
-export async function unfollowUser(myId: number, userToUnfollowId: number) {
-  return axios.post(`${BASE_URL}/users/${myId}/unfollow`, {
-    user_to_unfollow_id: userToUnfollowId,
-  });
+// Buscar utilizador por ID
+export async function getUserById(id: number) {
+  const response = await axios.get(`${BASE_URL}${id}`);
+  return response.data;
+}
+
+export async function followUser(myId: number, userToFollowId: number, token: string) {
+  return axios.post(
+    `${BASE_URL}${userToFollowId}/follow`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+  )
+}
+
+export async function unfollowUser(myId: number, userToUnfollowId: number, token: string) {
+  return axios.post(
+    `${BASE_URL}${userToUnfollowId}/unfollow`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+  )
+}
+
+// Buscar seguidores do utilizador
+export async function getFollowers(id: number) {
+  const response = await axios.get(`${BASE_URL}${id}/followers`);
+  return response.data; // array de utilizadores
+}
+
+// Buscar quem o utilizador segue
+export async function getFollowing(id: number) {
+  const response = await axios.get(`${BASE_URL}${id}/following`);
+  return response.data; // array de utilizadores
 }
