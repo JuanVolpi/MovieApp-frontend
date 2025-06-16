@@ -119,7 +119,7 @@ export default function MyListPage () {
           )}
         </div>
       </div>
-      <div className='overflow-y-scroll max-h-[calc(100vh-14rem)]'>
+      <div className='overflow-y-scroll max-h-[calc(100vh-15rem)]'>
         {loading ? (
           <p className='text-center text-gray-500'>Carregando...</p>
         ) : filmesFiltrados.length === 0 ? (
