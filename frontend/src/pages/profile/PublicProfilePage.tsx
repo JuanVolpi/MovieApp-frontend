@@ -11,6 +11,7 @@ import { Filme, User } from '@/types'
 import ListModal from '@/components/modal/ListModal'
 import UserHeader from '@/components/card/UserHeaderCard'
 import Navbar from '@/components/navbar'
+import MovieModal from '@/components/modal/MovieModal'
 
 export default function PerfilPublico () {
   const { id } = useParams<{ id: string }>()
@@ -21,19 +22,39 @@ export default function PerfilPublico () {
   const [showModal, setShowModal] = useState<'followers' | 'following' | null>(
     null
   )
+  const [modalFilme, setModalFilme] = useState<Filme | null>(null)
 
   useEffect(() => {
     if (!id) return
     ;(async () => {
       const uid = Number(id)
-      const [user, movies, seg, seguidos] = await Promise.all([
+      const [user, entries, seg, seguidos] = await Promise.all([
         getUserById(uid),
         getWatchedMovies(uid),
         getFollowers(uid),
         getFollowing(uid)
       ])
-      setUserData(user)
-      setFilmes(movies)
+      setUserData({
+        ...user,
+        avatar: user.image_url || `https://i.pravatar.cc/150?u=${user.id}`
+      })
+
+      // Normalização dos dados como em MyListPage
+      const filmesNormalizados: Filme[] = entries.map(entry => ({
+        id: entry.tmdb_id,
+        title: entry.title,
+        poster_path:
+          entry.poster_url?.replace('https://image.tmdb.org/t/p/w500', '') ||
+          '',
+        overview: entry.overview || '',
+        rating: entry.rating || undefined,
+        state: entry.state,
+        original_title: '',
+        release_date: entry.year || '',
+        original_language: '',
+        vote_average: entry.rating || 0
+      }))
+      setFilmes(filmesNormalizados)
       setFollowers(seg)
       setFollowing(seguidos)
     })()
@@ -57,13 +78,7 @@ export default function PerfilPublico () {
         />
 
         <h2 className='text-2xl font-semibold mb-4'>Últimos assistidos</h2>
-        <MovieGrid
-          filmes={filmes}
-          onFilmeClick={(filme: Filme) => {
-            console.log('Filme clicado:', filme)
-            // futuro: abrir modal de detalhes
-          }}
-        />
+        <MovieGrid filmes={filmes} onFilmeClick={setModalFilme} />
 
         <ListModal
           title={showModal === 'followers' ? 'Seguidores' : 'Seguindo'}
@@ -71,6 +86,10 @@ export default function PerfilPublico () {
           onClose={() => setShowModal(null)}
           users={showModal === 'followers' ? followers : following}
         />
+
+        {modalFilme && (
+          <MovieModal filme={modalFilme} onClose={() => setModalFilme(null)} />
+        )}
       </div>
     </>
   )
