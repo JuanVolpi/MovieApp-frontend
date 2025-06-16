@@ -7,6 +7,7 @@ import ProfilePage from './pages/profile/PublicProfilePage'
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage'
 import ProtectedRoute from './ProtectedRoute'
 import PublicProfilePage from './pages/profile/PublicProfilePage'
+import MyListPage from './pages/Filmes/MyListPage'
 
 function App () {
   return (
@@ -19,6 +20,14 @@ function App () {
         element={
           <ProtectedRoute>
             <CommunityPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path='/mylist'
+        element={
+          <ProtectedRoute>
+            <MyListPage />
           </ProtectedRoute>
         }
       />

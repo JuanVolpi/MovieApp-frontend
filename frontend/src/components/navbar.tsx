@@ -53,7 +53,7 @@ export default function CustomNavbar () {
     location.pathname === path ? 'text-primary font-semibold' : ''
 
   return (
-    <Navbar shouldHideOnScroll isBordered maxWidth='xl'>
+    <Navbar isBordered maxWidth='xl'>
       {/* Logo à esquerda */}
       <NavbarBrand as={Link} href='/filmes'>
         <MovieLogo />
@@ -64,12 +64,18 @@ export default function CustomNavbar () {
       {isClient && user && (
         <NavbarContent className='hidden sm:flex gap-6' justify='center'>
           <NavbarItem>
-            <Link href='/community' className={linkClass('/community')}>
+            <Link
+              href='/community'
+              className={`${linkClass('/community')} font-semibold`}
+            >
               Comunidade
             </Link>
           </NavbarItem>
           <NavbarItem>
-            <Link href='/minha-lista' className={linkClass('/minha-lista')}>
+            <Link
+              href='/mylist'
+              className={`${linkClass('/mylist')} font-semibold`}
+            >
               Minha Lista
             </Link>
           </NavbarItem>

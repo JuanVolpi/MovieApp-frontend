@@ -64,7 +64,7 @@ const MainPage = () => {
   return (
     <>
       <Navbar />
-      <div className='max-w-xl w-full mx-auto mt-6 px-4'>
+      <div className='max-w-xl w-full flex flex-col m-5 mx-auto gap-5 px-4'>
         <SearchBox
           value={query}
           placeholder='Pesquise por filmes'
@@ -75,22 +75,17 @@ const MainPage = () => {
           }}
         />
         {isSearchEmpty ? (
-          <div
-            className='text-center text-lg font-semibold pt-5
-'
-          >
-            Atualidades
-          </div>
+          <h1 className='text-2xl font-bold text-center'>Atualidades</h1>
         ) : (
           <></>
         )}
       </div>
-
-      <MovieGrid
-        filmes={filmes}
-        onFilmeClick={filme => setFilmeSelecionado(filme)}
-      />
-
+      <div className='overflow-y-scroll max-h-[calc(100vh-10rem)]'>
+        <MovieGrid
+          filmes={filmes}
+          onFilmeClick={filme => setFilmeSelecionado(filme)}
+        />
+      </div>
       {filmeSelecionado && (
         <MovieModal
           filme={filmeSelecionado}

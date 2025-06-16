@@ -1,6 +1,6 @@
 import { UserMinusIcon, UserPlusIcon } from '@heroicons/react/24/solid'
-import { User } from '@heroui/react'
 import { Button } from '@heroui/react'
+import { Link } from 'react-router-dom'
 
 interface CardUserFullProps {
   avatar: string
@@ -10,7 +10,7 @@ interface CardUserFullProps {
   followingCount: number
   jaSegue: boolean
   onToggleFollow: () => void
-  href?: string
+  href: string
 }
 
 export default function CardUserFull ({
@@ -24,41 +24,38 @@ export default function CardUserFull ({
   href
 }: CardUserFullProps) {
   return (
-    <div className='bg-default-100 p-4 rounded-2xl flex items-center justify-between gap-4 shadow-md hover:shadow-lg transition-shadow'>
-      <User
-        name={
-          <a href={href} className='text-base font-bold hover:underline'>
-            {nome}
-          </a>
-        }
-        description={<span className='text-sm text-default-500'>{email}</span>}
-        avatarProps={{ src: avatar }}
-        className='max-w-xs'
-      />
-
-      <div className='flex items-center gap-6 text-sm text-default-500'>
-        <span>
-          <span className='font-bold text-white'>{followersCount}</span>{' '}
-          Seguidores
-        </span>
-        <span>
-          <span className='font-bold text-white'>{followingCount}</span>{' '}
-          Seguindo
-        </span>
-      </div>
+    <div className='flex items-center justify-between p-4 bg-default-100 rounded-2xl shadow-sm'>
+      <Link to={href} className='flex items-center gap-4'>
+        <img
+          src={avatar}
+          alt={`Avatar de ${nome}`}
+          className='w-14 h-14 rounded-full border border-white shadow'
+        />
+        <div className='space-y-0.5'>
+          <h2 className='font-semibold text-md'>{nome}</h2>
+          <p className='text-default-500 text-sm'>{email}</p>
+          <div className='flex gap-4 text-sm text-default-500'>
+            <span>
+              <strong>{followersCount}</strong> Seguidores
+            </span>
+            <span>
+              <strong>{followingCount}</strong> Seguindo
+            </span>
+          </div>
+        </div>
+      </Link>
 
       <Button
-        onPress={onToggleFollow}
-        variant={jaSegue ? 'ghost' : 'solid'}
+        onClick={onToggleFollow}
         color={jaSegue ? 'default' : 'primary'}
-        startContent={
-          jaSegue ? (
-            <UserMinusIcon className='w-5' />
-          ) : (
-            <UserPlusIcon className='w-5' />
-          )
-        }
-        className='transition-colors'
+        variant='solid'
+        startContent={jaSegue ? <UserMinusIcon /> : <UserPlusIcon />}
+        onMouseEnter={e => {
+          if (jaSegue) e.currentTarget.textContent = 'Deixar de seguir'
+        }}
+        onMouseLeave={e => {
+          if (jaSegue) e.currentTarget.textContent = 'Seguindo'
+        }}
       >
         {jaSegue ? 'Seguindo' : 'Seguir'}
       </Button>

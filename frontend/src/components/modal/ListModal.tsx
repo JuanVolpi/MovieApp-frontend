@@ -6,27 +6,30 @@ import {
   ModalFooter,
   Button
 } from '@heroui/react'
-import CardUser from '../card/UserCard'
+import CardUserFull from '../card/CardUserFull'
 
 interface Utilizador {
   id: number
   username: string
   email: string
   avatar?: string
+  followersCount: number
+  followingCount: number
+  jaSegue: boolean
 }
 
 interface ModalListaProps {
   isOpen: boolean
   onClose: () => void
   titulo: string
-  lista?: Utilizador[] // agora é opcional
+  lista?: Utilizador[]
 }
 
 export default function ListModal ({
   isOpen,
   onClose,
   titulo,
-  lista = [] // fallback para array vazio
+  lista = []
 }: ModalListaProps) {
   return (
     <Modal
@@ -47,11 +50,15 @@ export default function ListModal ({
             </p>
           ) : (
             lista.map(user => (
-              <CardUser
+              <CardUserFull
                 key={user.id}
                 avatar={user.avatar || `https://i.pravatar.cc/150?u=${user.id}`}
                 nome={user.username}
                 email={user.email}
+                followersCount={user.followersCount || 0}
+                followingCount={user.followingCount || 0}
+                jaSegue={user.jaSegue || false}
+                onToggleFollow={() => console.log(`Toggle follow: ${user.id}`)}
                 href={`/perfil/${user.id}`}
               />
             ))

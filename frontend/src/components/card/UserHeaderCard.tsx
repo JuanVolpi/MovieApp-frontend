@@ -23,7 +23,7 @@ export default function UserHeader ({
     <div className='flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-8'>
       <img
         src={avatar || `https://i.pravatar.cc/150?u=${username}`}
-        className='w-32 h-32 rounded-full border-4 border-white shadow-md'
+        className='w-32 h-32 rounded-full border-2 border-white shadow-md'
         alt='avatar'
       />
       <div className='text-center sm:text-left'>

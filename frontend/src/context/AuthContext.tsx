@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setUser({
             id: parseInt(decoded.sub),
             username: decoded.username,
-            avatar: decoded.avatar,
+            avatar: decoded.image_url,
             email: decoded.email
           })
           console.log(user)
