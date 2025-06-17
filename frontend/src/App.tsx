@@ -3,47 +3,80 @@ import MainPage from './pages/Filmes/MainPage'
 import CommunityPage from './pages/community/CommunityPage'
 import LoginPage from './pages/auth/LoginPage'
 import RegisterPage from './pages/auth/RegisterPage'
-import ProfilePage from './pages/profile/PublicProfilePage'
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage'
-import ProtectedRoute from './ProtectedRoute'
 import PublicProfilePage from './pages/profile/PublicProfilePage'
 import MyListPage from './pages/Filmes/MyListPage'
+import PrivateRoute from './route_protection/PrivateRoute'
+import PublicOnlyRoute from './route_protection/PublicOnlyRoute'
 
 function App () {
   return (
     <Routes>
-      <Route path='/login' element={<LoginPage />} />
-      {/* <Route path="/profile" element={<ProfilePage />} /> */}
-      {/* <Route path="/" element={<ProtectedRoute><MainPage /></ProtectedRoute>} /> */}
+      <Route
+        path='/login'
+        element={
+          <PublicOnlyRoute>
+            <LoginPage />
+          </PublicOnlyRoute>
+        }
+      />
+      <Route
+        path='/register'
+        element={
+          <PublicOnlyRoute>
+            <RegisterPage />
+          </PublicOnlyRoute>
+        }
+      />
+      <Route
+        path='/forgot-password'
+        element={
+          <PublicOnlyRoute>
+            <ForgotPasswordPage />
+          </PublicOnlyRoute>
+        }
+      />
+      <Route
+        path='/'
+        element={
+          <PrivateRoute>
+            <MainPage />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path='/filmes'
+        element={
+          <PrivateRoute>
+            <MainPage />
+          </PrivateRoute>
+        }
+      />
       <Route
         path='/community'
         element={
-          <ProtectedRoute>
+          <PrivateRoute>
             <CommunityPage />
-          </ProtectedRoute>
+          </PrivateRoute>
         }
       />
       <Route
         path='/mylist'
         element={
-          <ProtectedRoute>
+          <PrivateRoute>
             <MyListPage />
-          </ProtectedRoute>
+          </PrivateRoute>
         }
       />
-      <Route path='/filmes' element={<MainPage />} />
-      <Route path='/' element={<MainPage />} />
-      <Route path='/register' element={<RegisterPage />} />
-      <Route path='/forgot-password' element={<ForgotPasswordPage />} />
-      <Route path='*' element={<Navigate to='/' />} />
       <Route
         path='/perfil/:id'
         element={
-          <ProtectedRoute>
+          <PrivateRoute>
             <PublicProfilePage />
-          </ProtectedRoute>
+          </PrivateRoute>
         }
       />
+      <Route path='*' element={<Navigate to='/' />} />
     </Routes>
   )
 }
