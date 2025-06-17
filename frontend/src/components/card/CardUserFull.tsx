@@ -9,7 +9,7 @@ interface CardUserFullProps {
   followersCount: number
   followingCount: number
   jaSegue: boolean
-  onToggleFollow: () => void
+  onToggleFollow?: () => void // 🔹 agora é opcional
   href: string
 }
 
@@ -45,20 +45,22 @@ export default function CardUserFull ({
         </div>
       </Link>
 
-      <Button
-        onClick={onToggleFollow}
-        color={jaSegue ? 'default' : 'primary'}
-        variant='solid'
-        startContent={jaSegue ? <UserMinusIcon /> : <UserPlusIcon />}
-        onMouseEnter={e => {
-          if (jaSegue) e.currentTarget.textContent = 'Deixar de seguir'
-        }}
-        onMouseLeave={e => {
-          if (jaSegue) e.currentTarget.textContent = 'Seguindo'
-        }}
-      >
-        {jaSegue ? 'Seguindo' : 'Seguir'}
-      </Button>
+      {onToggleFollow && (
+        <Button
+          onClick={onToggleFollow}
+          color={jaSegue ? 'default' : 'primary'}
+          variant='solid'
+          startContent={
+            jaSegue ? (
+              <UserMinusIcon className='w-5' />
+            ) : (
+              <UserPlusIcon className='w-5' />
+            )
+          }
+        >
+          {jaSegue ? 'Seguindo' : 'Seguir'}
+        </Button>
+      )}
     </div>
   )
 }
