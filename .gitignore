@@ -17,6 +17,7 @@ __pycache__/
 # Ficheiros de ambiente (IGNORAR EM TODAS AS PASTAS)
 .env
 .flaskenv
+node_modules/
 
 # Ficheiros de teste (O seu já tem _Testing/, o que é bom)
 _Testing/
