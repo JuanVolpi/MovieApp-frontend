@@ -9,7 +9,8 @@ import {
   CardBody,
   CardFooter,
   Input,
-  Link
+  Link,
+  Image
 } from '@heroui/react'
 import CustomNavbar from '@/components/navbar'
 
@@ -44,7 +45,13 @@ export default function LoginPage () {
   return (
     <>
       <CustomNavbar />
-      <div className='flex flex-col items-center justify-center text-center min-h-screen'>
+      <div className='flex flex-col items-center -m-32 justify-center text-center min-h-screen'>
+        <Image
+          alt='MovieApp image logo'
+          className='m-5'
+          src='/logo.png'
+          width={240}
+        />
         <Card className='w-full max-w-md'>
           <CardBody className='space-y-4'>
             <h2 className='text-center text-2xl font-semibold mb-4'>LOGIN</h2>

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { addToast, CardFooter } from '@heroui/react'
 import { useNavigate } from 'react-router-dom'
-import { Card, CardBody, Input, Button, Link } from '@heroui/react'
+import { Card, CardBody, Input, Button, Link, Image } from '@heroui/react'
 import { registerUser } from '@/services/authService'
 import CustomNavbar from '@/components/navbar'
 
@@ -34,7 +34,13 @@ export default function RegisterPage () {
   return (
     <>
       <CustomNavbar />
-      <div className='flex items-center justify-center h-screen'>
+      <div className='flex flex-col items-center -m-32 justify-center text-center min-h-screen'>
+        <Image
+          alt='MovieApp image logo'
+          className='m-5'
+          src='/logo.png'
+          width={240}
+        />
         <Card className='w-full max-w-md'>
           <CardBody className='space-y-4'>
             <h1 className='text-xl font-semibold text-center'>Criar Conta</h1>
