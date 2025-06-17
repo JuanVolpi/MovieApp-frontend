@@ -7,6 +7,7 @@ import type { Filme } from '@/types'
 import SearchBox from '@/components/input/SearchBox'
 import MovieGrid from '@/components/grid/MovieGrid'
 import MovieModal from '@/components/modal/MovieModal'
+import { ScrollShadow } from '@heroui/react'
 
 const MainPage = () => {
   const { user } = useAuth()
@@ -117,11 +118,13 @@ const MainPage = () => {
         )}
       </div>
 
-      <div className='overflow-y-scroll max-h-[calc(100vh-10rem)]'>
-        <MovieGrid
-          filmes={filmes}
-          onFilmeClick={filme => setFilmeSelecionado(filme)}
-        />
+      <div className='overflow-y-scroll scrollbar-hide max-h-[calc(100vh-10rem)]'>
+        <ScrollShadow hideScrollBar className='max-h-[calc(100vh-10rem)]'>
+          <MovieGrid
+            filmes={filmes}
+            onFilmeClick={filme => setFilmeSelecionado(filme)}
+          />
+        </ScrollShadow>
       </div>
 
       {filmeSelecionado && (
