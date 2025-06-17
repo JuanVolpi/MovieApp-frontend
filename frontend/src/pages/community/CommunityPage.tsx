@@ -40,8 +40,8 @@ export default function CommunityPage () {
           username: u.username,
           email: u.email,
           avatar: u.image_url || `https://i.pravatar.cc/150?u=${u.id}`,
-          followersCount: u.followers_count || 0,
-          followingCount: u.following_count || 0,
+          followers_count: u.followers_count || 0,
+          following_count: u.following_count || 0,
           jaSegue: following.includes(u.id)
         }))
         setUsers(updated)
@@ -103,10 +103,12 @@ export default function CommunityPage () {
               avatar={u.avatar}
               nome={u.username}
               email={u.email}
-              followersCount={u.followersCount}
-              followingCount={u.followingCount}
-              jaSegue={u.jaSegue}
-              onToggleFollow={() => handleFollowToggle(u.id, u.jaSegue)}
+              followersCount={u.followersCount ?? 0}
+              followingCount={u.followingCount ?? 0}
+              jaSegue={u.jaSegue ?? false}
+              onToggleFollow={() =>
+                handleFollowToggle(u.id, u.jaSegue ?? false)
+              }
               href={`/perfil/${u.id}`}
             />
           ))}

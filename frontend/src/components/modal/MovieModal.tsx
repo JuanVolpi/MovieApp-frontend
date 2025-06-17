@@ -7,7 +7,6 @@ import {
   Button,
   Image,
   Textarea,
-  Input,
   addToast,
   ButtonGroup
 } from '@heroui/react'
@@ -33,7 +32,7 @@ interface MovieModalProps {
   filme: Filme
   onClose: () => void
   onUpdate?: () => void
-  userId: number
+  userId?: number
 }
 
 export default function MovieModal ({
@@ -53,7 +52,10 @@ export default function MovieModal ({
     if (!user || !filme) return
     const fetchEntry = async () => {
       try {
-        const data = await getMovieEntry(userId ? userId : user.id, filme.id)
+        const data = await getMovieEntry(
+          userId ? userId : user.id,
+          filme.id ?? 0
+        )
         setInWatchlist(data.list)
         setWatched(data.watched)
         setRating(data.rating?.toString() || '0')
@@ -71,7 +73,7 @@ export default function MovieModal ({
     setLoading(true)
     try {
       if (inWatchlist) {
-        await removeEntry(user.id, filme.id)
+        await removeEntry(user.id, filme.id ?? 0)
         setInWatchlist(false)
         setWatched(false)
         addToast({
@@ -81,7 +83,7 @@ export default function MovieModal ({
           variant: 'solid'
         })
       } else {
-        await addToWatchlist(user.id, filme.id)
+        await addToWatchlist(user.id, filme.id ?? 0)
         setInWatchlist(true)
         addToast({
           title: 'Adicionado à sua lista',
@@ -117,7 +119,7 @@ export default function MovieModal ({
 
     setLoading(true)
     try {
-      await submitReview(user.id, filme.id, nota, review)
+      await submitReview(user.id, filme.id ?? 0, nota, review)
       setWatched(true)
       setInWatchlist(true)
       addToast({
@@ -164,7 +166,7 @@ export default function MovieModal ({
               </p>
               <p>
                 <span className='font-semibold'>Idioma:</span>{' '}
-                {filme.original_language.toUpperCase()}
+                {filme.original_language?.toUpperCase()}
               </p>
               <p>
                 <span className='font-semibold'>Lançamento:</span>{' '}
@@ -172,7 +174,7 @@ export default function MovieModal ({
               </p>
               <p>
                 <span className='font-semibold'>Nota média:</span>{' '}
-                {filme.vote_average.toFixed(1)} / 10
+                {filme.vote_average?.toFixed(1)} / 10
               </p>
               <p>
                 <span className='font-semibold'>Descrição:</span>{' '}

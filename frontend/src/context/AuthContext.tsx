@@ -30,8 +30,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setUser({
             id: parseInt(decoded.sub),
             username: decoded.username,
-            avatar: decoded.image_url,
-            email: decoded.email
+            avatar: decoded.avatar,
+            email: decoded.email,
+            followers_count: decoded.followers_count ?? 0,
+            following_count: decoded.following_count ?? 0
           })
         }
       } catch {

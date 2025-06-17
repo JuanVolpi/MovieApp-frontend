@@ -9,7 +9,7 @@ interface CardUserFullProps {
   followersCount: number
   followingCount: number
   jaSegue: boolean
-  onToggleFollow?: () => void // 🔹 agora é opcional
+  onToggleFollow?: () => void
   href: string
 }
 

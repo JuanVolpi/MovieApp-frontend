@@ -1,7 +1,6 @@
 // src/components/card/CardUser.tsx
 import { useAuth } from '@/context/AuthContext'
-import { User, Link, Card, CardBody, Tooltip } from '@heroui/react'
-import { div } from 'framer-motion/client'
+import { User, Link, Card, Tooltip } from '@heroui/react'
 import { useNavigate } from 'react-router-dom'
 
 interface CardUserProps {
@@ -28,7 +27,7 @@ export default function CardUser ({ avatar, nome, email, href }: CardUserProps) 
           <User
             onClick={handleClick}
             avatarProps={{
-              src: avatar ? avatar : `https://i.pravatar.cc/150?u=${user.id}`
+              src: avatar ? avatar : `https://i.pravatar.cc/150?u=${user?.id}`
             }}
             name={
               href ? (
