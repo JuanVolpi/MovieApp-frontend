@@ -4,11 +4,12 @@ import { getWatchedMovies, getWatchlist } from '@/services/historyService'
 import { Filme } from '@/types'
 import MovieGrid from '@/components/grid/MovieGrid'
 import MovieModal from '@/components/modal/MovieModal'
-import { Input, Slider, Switch, Tooltip } from '@heroui/react'
+import { Slider, Switch, Tooltip } from '@heroui/react'
 import SearchBox from '@/components/input/SearchBox'
 import { useAuth } from '@/context/AuthContext'
 import EyeIcon from '@heroicons/react/24/outline/EyeIcon'
 import EyeSlashIcon from '@heroicons/react/24/solid/EyeSlashIcon'
+import StarIcon from '@heroicons/react/24/solid/StarIcon'
 
 export default function MyListPage () {
   const { user } = useAuth()
@@ -52,11 +53,12 @@ export default function MyListPage () {
           '',
         overview: entry.overview || '',
         rating: entry.rating || undefined,
-        state: entry.state,
         original_title: '',
         release_date: entry.year || '',
         original_language: '',
-        vote_average: entry.rating || 0
+        vote_average: entry.watched ? entry.rating || 0 : 0,
+        list: entry.list,
+        watched: entry.watched
       }))
   }, [entries, searchQuery, notaMinima, showWatched])
 
@@ -91,14 +93,18 @@ export default function MyListPage () {
           </Tooltip>
           {showWatched && (
             <div className='w-full flex flex-row items-center gap-4 px-2'>
-              <h3 className='text-md whitespace-nowrap'>Nota mínima:</h3>
+              <h3 className='font-semibold whitespace-nowrap'>Nota mínima:</h3>
               <Slider
                 className='flex-1'
                 minValue={0}
                 maxValue={5}
                 step={1}
                 value={notaMinima}
-                onChange={val => setNotaMinima(val as number)}
+                onChange={val => {
+                  const number =
+                    typeof val === 'number' ? val : (val as any)?.value
+                  setNotaMinima(number || 0)
+                }}
                 marks={[
                   { value: 0, label: '0' },
                   { value: 1, label: '1' },
@@ -108,7 +114,10 @@ export default function MyListPage () {
                   { value: 5, label: '5' }
                 ]}
               />
-              <span className='text-sm'>{notaMinima.toFixed(1)}</span>
+              <span className='text-md align-middle flex justify-between gap-1 font-semibold'>
+                {notaMinima}
+                <StarIcon className='w-5 text-yellow-400' />
+              </span>
             </div>
           )}
 
@@ -119,6 +128,7 @@ export default function MyListPage () {
           )}
         </div>
       </div>
+
       <div className='overflow-y-scroll max-h-[calc(100vh-15rem)]'>
         {loading ? (
           <p className='text-center text-gray-500'>Carregando...</p>
@@ -136,6 +146,8 @@ export default function MyListPage () {
             setModalFilme(null)
             carregarFilmes()
           }}
+          onUpdate={carregarFilmes}
+          userId={user?.id}
         />
       )}
     </>
