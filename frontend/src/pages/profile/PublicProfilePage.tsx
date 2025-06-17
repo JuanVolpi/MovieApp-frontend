@@ -1,45 +1,36 @@
 import { useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
-import {
-  getUserById,
-  getFollowers,
-  getFollowing
-} from '@/services/communityService'
-import { getWatchedMovies } from '@/services/historyService'
 import MovieGrid from '@/components/grid/MovieGrid'
 import { Filme, User } from '@/types'
-import ListModal from '@/components/modal/ListModal'
-import UserHeader from '@/components/card/UserHeaderCard'
 import Navbar from '@/components/navbar'
 import MovieModal from '@/components/modal/MovieModal'
+import FollowersModal from '@/components/modal/FollowersModal'
+import FollowingModal from '@/components/modal/FollowingModal'
+import UserHeader from '@/components/card/UserHeaderCard'
+import { getUserById } from '@/services/communityService'
+import { getWatchedMovies } from '@/services/historyService'
 
 export default function PerfilPublico () {
   const { id } = useParams<{ id: string }>()
   const [userData, setUserData] = useState<User | null>(null)
   const [filmes, setFilmes] = useState<Filme[]>([])
-  const [followers, setFollowers] = useState<User[]>([])
-  const [following, setFollowing] = useState<User[]>([])
-  const [showModal, setShowModal] = useState<'followers' | 'following' | null>(
-    null
-  )
   const [modalFilme, setModalFilme] = useState<Filme | null>(null)
+  const [showFollowersModal, setShowFollowersModal] = useState(false)
+  const [showFollowingModal, setShowFollowingModal] = useState(false)
 
   useEffect(() => {
     if (!id) return
     ;(async () => {
       const uid = Number(id)
-      const [user, entries, seg, seguidos] = await Promise.all([
+      const [user, entries] = await Promise.all([
         getUserById(uid),
-        getWatchedMovies(uid),
-        getFollowers(uid),
-        getFollowing(uid)
+        getWatchedMovies(uid)
       ])
       setUserData({
         ...user,
         avatar: user.image_url || `https://i.pravatar.cc/150?u=${user.id}`
       })
 
-      // Normalização dos dados como em MyListPage
       const filmesNormalizados: Filme[] = entries.map(entry => ({
         id: entry.tmdb_id,
         title: entry.title,
@@ -55,8 +46,6 @@ export default function PerfilPublico () {
         vote_average: entry.rating || 0
       }))
       setFilmes(filmesNormalizados)
-      setFollowers(seg)
-      setFollowing(seguidos)
     })()
   }, [id])
 
@@ -71,24 +60,33 @@ export default function PerfilPublico () {
           avatar={userData.avatar}
           username={userData.username}
           email={userData.email}
-          followersCount={followers.length}
-          followingCount={following.length}
-          onShowFollowers={() => setShowModal('followers')}
-          onShowFollowing={() => setShowModal('following')}
+          followersCount={userData.followers_count} // A contagem real pode ser colocada no modal
+          followingCount={userData.following_count} // se você quiser buscá-la separadamente
+          onShowFollowers={() => setShowFollowersModal(true)}
+          onShowFollowing={() => setShowFollowingModal(true)}
         />
 
-        <h2 className='text-2xl font-semibold mb-4'>Últimos assistidos</h2>
+        <h2 className='text-2xl font-semibold mb-4'>Assistidos</h2>
         <MovieGrid filmes={filmes} onFilmeClick={setModalFilme} />
 
-        <ListModal
-          title={showModal === 'followers' ? 'Seguidores' : 'Seguindo'}
-          isOpen={!!showModal}
-          onClose={() => setShowModal(null)}
-          users={showModal === 'followers' ? followers : following}
+        <FollowersModal
+          isOpen={showFollowersModal}
+          onClose={() => setShowFollowersModal(false)}
+          userId={userData.id}
+        />
+
+        <FollowingModal
+          isOpen={showFollowingModal}
+          onClose={() => setShowFollowingModal(false)}
+          userId={userData.id}
         />
 
         {modalFilme && (
-          <MovieModal filme={modalFilme} onClose={() => setModalFilme(null)} />
+          <MovieModal
+            filme={modalFilme}
+            onClose={() => setModalFilme(null)}
+            userId={userData.id}
+          />
         )}
       </div>
     </>
