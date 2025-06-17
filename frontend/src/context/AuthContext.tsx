@@ -33,7 +33,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             avatar: decoded.image_url,
             email: decoded.email
           })
-          console.log(user)
         }
       } catch {
         logout()
@@ -41,10 +40,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
     setLoading(false)
   }, [token])
-
-  useEffect(() => {
-    console.log('Novo user carregado:', user)
-  }, [user])
 
   const login = (newToken: string) => {
     localStorage.setItem('auth_token', newToken)

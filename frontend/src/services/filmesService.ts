@@ -14,6 +14,5 @@ export async function getFilmes(query: string): Promise<Filme[]> {
 export async function getPopular(): Promise<Filme[]> {
   const response = await axios.get(`${BASE_URL}movies/popular`, {
   });
-  console.log("Popular response:", response.data);
   return response.data ?? [];
 }

@@ -78,7 +78,7 @@ export default function ListModal ({
                 followersCount={user.followersCount || 0}
                 followingCount={user.followingCount || 0}
                 jaSegue={user.jaSegue || false}
-                onToggleFollow={() => console.log(`Toggle follow: ${user.id}`)}
+                onToggleFollow={() => {}}
                 href={`/perfil/${user.id}`}
               />
             ))

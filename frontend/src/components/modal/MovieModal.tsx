@@ -59,7 +59,6 @@ export default function MovieModal ({
         setRating(data.rating?.toString() || '0')
         setReview(data.review_text || '')
       } catch {
-        console.log('Filme ainda não tem entrada.')
         setInWatchlist(false)
         setWatched(false)
       }
