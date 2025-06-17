@@ -8,7 +8,8 @@ import {
   Image,
   Textarea,
   Input,
-  addToast
+  addToast,
+  ButtonGroup
 } from '@heroui/react'
 import { useEffect, useState } from 'react'
 import { Filme } from '@/types'
@@ -31,37 +32,40 @@ import {
 interface MovieModalProps {
   filme: Filme
   onClose: () => void
+  onUpdate?: () => void
+  userId: number
 }
 
-export default function MovieModal ({ filme, onClose }: MovieModalProps) {
+export default function MovieModal ({
+  filme,
+  onClose,
+  userId,
+  onUpdate
+}: MovieModalProps) {
   const { user } = useAuth()
   const [inWatchlist, setInWatchlist] = useState(false)
+  const [watched, setWatched] = useState(false)
   const [rating, setRating] = useState('0')
   const [review, setReview] = useState('')
   const [loading, setLoading] = useState(false)
-  const [estado, setEstado] = useState<true | false | null>(null)
 
   useEffect(() => {
-    if (!user?.id || !filme?.id) return
-
+    if (!user || !filme) return
     const fetchEntry = async () => {
       try {
-        const data = await getMovieEntry(user.id, filme.id)
-        setEstado(data.state)
-        setInWatchlist(data.state === false)
+        const data = await getMovieEntry(userId ? userId : user.id, filme.id)
+        setInWatchlist(data.list)
+        setWatched(data.watched)
         setRating(data.rating?.toString() || '0')
         setReview(data.review_text || '')
       } catch {
         console.log('Filme ainda não tem entrada.')
-        setEstado(null)
         setInWatchlist(false)
-        setRating('0')
-        setReview('')
+        setWatched(false)
       }
     }
-
     fetchEntry()
-  }, [user?.id, filme?.id]) // <- evita múltiplas execuções
+  }, [user, filme])
 
   const handleToggleWatchlist = async () => {
     if (!user) return
@@ -70,7 +74,7 @@ export default function MovieModal ({ filme, onClose }: MovieModalProps) {
       if (inWatchlist) {
         await removeEntry(user.id, filme.id)
         setInWatchlist(false)
-        setEstado(null)
+        setWatched(false)
         addToast({
           title: 'Removido da sua lista',
           description: `${filme.title} foi removido com sucesso.`,
@@ -80,7 +84,6 @@ export default function MovieModal ({ filme, onClose }: MovieModalProps) {
       } else {
         await addToWatchlist(user.id, filme.id)
         setInWatchlist(true)
-        setEstado(false)
         addToast({
           title: 'Adicionado à sua lista',
           description: `${filme.title} foi salvo na sua lista.`,
@@ -103,11 +106,11 @@ export default function MovieModal ({ filme, onClose }: MovieModalProps) {
 
   const handleSubmitReview = async () => {
     const nota = parseFloat(rating)
-    if (!user || isNaN(nota) || nota <= 0) {
+    if (!user || ((isNaN(nota) || nota <= 0) && review.trim() === '')) {
       addToast({
-        title: 'Nota inválida',
-        description: 'Dê uma nota maior que 0 para submeter.',
-        color: 'warning',
+        title: 'Avaliação incompleta',
+        description: 'Avalie o filme ou escreva uma review antes de submeter.',
+        color: 'danger',
         variant: 'solid'
       })
       return
@@ -116,19 +119,17 @@ export default function MovieModal ({ filme, onClose }: MovieModalProps) {
     setLoading(true)
     try {
       await submitReview(user.id, filme.id, nota, review)
-
-      // Aguardar um pouco para garantir que a entrada foi persistida
-      await new Promise(resolve => setTimeout(resolve, 300))
-
-      setEstado(true)
+      setWatched(true)
       setInWatchlist(true)
-
       addToast({
         title: 'Review enviada',
         description: 'Seu feedback foi registrado com sucesso!',
         color: 'success',
         variant: 'solid'
       })
+
+      // ✅ CHAMA o onUpdate se estiver definido
+      if (onUpdate) onUpdate()
     } catch (err) {
       console.error('Erro ao submeter review:', err)
       addToast({
@@ -179,7 +180,6 @@ export default function MovieModal ({ filme, onClose }: MovieModalProps) {
                 {filme.overview || 'Sem descrição.'}
               </p>
             </div>
-
             <div className='flex items-center gap-2'>
               <Button
                 onClick={handleToggleWatchlist}
@@ -198,25 +198,34 @@ export default function MovieModal ({ filme, onClose }: MovieModalProps) {
                 {inWatchlist ? 'Remover da lista' : 'Adicionar à lista'}
               </Button>
 
-              {estado === true && (
+              {watched && (
                 <span className='text-green-600 flex items-center gap-1 text-xs'>
                   <CheckCircleIcon className='w-4 h-4' /> Assistido
                 </span>
               )}
             </div>
 
-            <Input
-              min={0}
-              max={5}
-              label='Nota'
-              labelPlacement='outside'
-              placeholder='0'
-              startContent={<StarIcon className='w-5 text-yellow-400' />}
-              type='number'
-              value={rating}
-              onChange={e => setRating(e.target.value)}
-              disabled={loading}
-            />
+            <div className='flex flex-col justify-center w-full align-middle text-center text-lg'>
+              <ButtonGroup>
+                {[1, 2, 3, 4, 5].map(n => (
+                  <Button
+                    key={n}
+                    startContent={
+                      <StarIcon
+                        className={`w-5 ${
+                          parseInt(rating) >= n
+                            ? 'text-yellow-400'
+                            : 'text-gray-500'
+                        }`}
+                      />
+                    }
+                    isIconOnly
+                    variant='light'
+                    onPress={() => setRating(n.toString())}
+                  />
+                ))}
+              </ButtonGroup>
+            </div>
 
             <Textarea
               label='Review (opcional)'
@@ -236,11 +245,23 @@ export default function MovieModal ({ filme, onClose }: MovieModalProps) {
           >
             Fechar
           </Button>
-
           <Button
-            onClick={handleSubmitReview}
+            onPress={() => {
+              const nota = parseFloat(rating)
+              if (nota <= 0 && review.trim() === '') {
+                addToast({
+                  title: 'Avaliação incompleta',
+                  description:
+                    'Avalie o filme ou escreva uma review antes de submeter.',
+                  color: 'danger',
+                  variant: 'solid'
+                })
+                return
+              }
+              handleSubmitReview()
+            }}
             color='success'
-            disabled={loading || parseFloat(rating) <= 0}
+            disabled={loading}
             startContent={<PaperAirplaneIcon className='w-4 h-4' />}
           >
             Submeter review
