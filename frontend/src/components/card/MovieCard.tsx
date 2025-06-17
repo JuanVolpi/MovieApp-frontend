@@ -1,18 +1,9 @@
 import { useEffect, useState } from 'react'
-import {
-  Card,
-  CardBody,
-  CardHeader,
-  Image,
-  Spinner,
-  Tooltip
-} from '@heroui/react'
-import { StarIcon, HeartIcon, BookmarkIcon } from '@heroicons/react/24/solid'
-import { PlusIcon } from '@heroicons/react/24/outline'
+import { Card, CardBody, Image, Spinner, Tooltip } from '@heroui/react'
+import { StarIcon, BookmarkIcon } from '@heroicons/react/24/solid'
 import type { Filme } from '@/types'
 import { useAuth } from '@/context/AuthContext'
 import { getMovieEntry } from '@/services/historyService'
-import { div } from 'framer-motion/client'
 
 interface MovieCardProps {
   filme: Filme
@@ -29,7 +20,7 @@ export default function MovieCard ({ filme, onClick }: MovieCardProps) {
     const fetchEntry = async () => {
       if (!user) return
       try {
-        const entry = await getMovieEntry(user.id, filme.id)
+        const entry = await getMovieEntry(user.id, filme.id ?? 0)
         setEstaNaLista(true)
         setNota(entry.rating || null)
       } catch {

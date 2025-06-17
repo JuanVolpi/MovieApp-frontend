@@ -118,7 +118,11 @@ export default function FollowersModal ({
             followers.map(user => (
               <CardUserFull
                 key={user.id}
-                avatar={user.avatar}
+                avatar={
+                  user.avatar
+                    ? user.avatar
+                    : `https://i.pravatar.cc/150?u=${user?.id}`
+                }
                 nome={user.username}
                 email={user.email}
                 followersCount={user.followersCount}

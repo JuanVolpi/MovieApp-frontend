@@ -22,10 +22,12 @@ export default function RegisterPage () {
       })
       navigate('/login')
     } catch (err) {
+      const error = err as { response?: { data?: { error?: string } } }
+
       addToast({
         title: 'Erro ao criar conta',
         color: 'danger',
-        description: err.response?.data?.error || 'Erro inesperado.',
+        description: error.response?.data?.error || 'Erro inesperado.',
         variant: 'solid'
       })
     }

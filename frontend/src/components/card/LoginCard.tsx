@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { Card, CardBody, Input, Button } from '@heroui/react'
 import { addToast } from '@heroui/react'
-import { loginUser } from '@/services/authService'
 import { useNavigate } from 'react-router-dom'
+import { login } from '@/services/authService'
 
 export default function LoginCard () {
   const [username, setUsername] = useState('')
@@ -11,7 +11,7 @@ export default function LoginCard () {
 
   const handleLogin = async () => {
     try {
-      const response = await loginUser({ username, password })
+      const response = await login(username, password)
       const { access_token, user } = response
 
       localStorage.setItem('token', access_token)

@@ -31,7 +31,7 @@ export default function PerfilPublico () {
         avatar: user.image_url || `https://i.pravatar.cc/150?u=${user.id}`
       })
 
-      const filmesNormalizados: Filme[] = entries.map(entry => ({
+      const filmesNormalizados: Filme[] = entries.map((entry: Filme) => ({
         id: entry.tmdb_id,
         title: entry.title,
         poster_path:

@@ -22,7 +22,7 @@ export async function getUserById(id: number) {
   return response.data;
 }
 
-export async function followUser(myId: number, userToFollowId: number, token: string) {
+export async function followUser(_myId: number, userToFollowId: number, token: string) {
   return axios.post(
     `${BASE_URL}${userToFollowId}/follow`,
     {},
@@ -34,7 +34,8 @@ export async function followUser(myId: number, userToFollowId: number, token: st
   )
 }
 
-export async function unfollowUser(myId: number, userToUnfollowId: number, token: string) {
+
+export async function unfollowUser(_myId: number, userToUnfollowId: number, token: string) {
   return axios.post(
     `${BASE_URL}${userToUnfollowId}/unfollow`,
     {},

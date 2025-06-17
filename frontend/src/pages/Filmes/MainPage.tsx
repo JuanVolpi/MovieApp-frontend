@@ -85,7 +85,7 @@ const MainPage = () => {
         if (!user) return filmeBase
 
         try {
-          const entry = await getMovieEntry(user.id, filmeBase.id)
+          const entry = await getMovieEntry(user.id, filmeBase.id ?? 0)
           return {
             ...filmeBase,
             list: entry.list,
@@ -132,7 +132,6 @@ const MainPage = () => {
             handleRefresh()
           }}
           onUpdate={handleRefresh}
-          userId={null}
         />
       )}
     </>

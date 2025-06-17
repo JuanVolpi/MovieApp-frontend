@@ -16,10 +16,12 @@ export default function ForgotPasswordPage () {
         variant: 'solid'
       })
     } catch (err) {
+      const error = err as { response?: { data?: { error?: string } } }
+
       addToast({
         title: 'Erro',
         description:
-          err.response?.data?.error || 'Falha ao enviar link de reset.',
+          error.response?.data?.error || 'Falha ao enviar link de reset.',
         variant: 'solid'
       })
     }
